@@ -247,7 +247,7 @@ export function AdminWorkspace() {
         <div className="workspace-profile">
           <div className="workspace-profile-main">
             <div className="workspace-avatar">I</div>
-            <div className="stack-12">
+            <div className="workspace-profile-meta">
               <p className="workspace-profile-name">Ibrahim</p>
               <p className="workspace-profile-role">Admin user</p>
             </div>
