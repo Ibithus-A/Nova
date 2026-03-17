@@ -1,65 +1,167 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+import { MarketingGraph } from "@/components/marketing-graph";
+import { PageHeader, PageShell, Panel } from "@/components/page-shell";
+import { Reveal } from "@/components/reveal";
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <PageShell>
+      <div className="content-shell stack-56">
+        <Reveal>
+          <PageHeader
+            eyebrow="Financial news for beginners"
+            title="We take complex market updates and explain them clearly."
+            description="Nova helps people understand major financial developments without the jargon. We break down fast-moving market news, explain why it matters, and keep readers updated in language beginners can actually follow."
+            actions={
+              <>
+                <Link className="btn btn-primary btn-lg" href="/sign-in">
+                  Sign in
+                </Link>
+                <Link className="btn btn-secondary btn-lg" href="#product-overview">
+                  Learn more
+                </Link>
+              </>
+            }
+          />
+        </Reveal>
+
+        <Reveal delay={60}>
+          <MarketingGraph />
+        </Reveal>
+
+        <Reveal delay={100}>
+          <Panel padded="lg" className="section-intro" id="product-overview">
+            <div className="metric-badge">What we do</div>
+            <div className="section-intro">
+              <h2 className="section-title">We turn confusing financial headlines into simple explanations.</h2>
+              <p className="body-copy max-w-3xl">
+                When markets move quickly, most coverage assumes readers already know the background. We close that
+                gap by translating those updates into plain English and showing what changed, why it matters, and
+                what to keep watching.
+              </p>
+            </div>
+          </Panel>
+        </Reveal>
+
+        <Reveal delay={140}>
+          <section className="section-stack-lg">
+            <div className="section-intro text-center">
+              <h2 className="section-title">How Nova helps readers make sense of the market</h2>
+              <p className="body-copy mx-auto max-w-2xl">
+                Every update is designed to feel clear, connected, and approachable, especially for people who are
+                still learning how financial stories fit together.
+              </p>
+            </div>
+
+            <div className="page-grid-tight md:grid-cols-3">
+              <Panel padded="lg" className="feature-card h-full">
+                <div className="metric-badge">01</div>
+                <div className="feature-card-copy">
+                  <h3 className="feature-card-title">Beginner-friendly explainers for major headlines</h3>
+                  <p className="feature-card-body">
+                    Readers get simple breakdowns of what happened, why it matters, and what the financial language
+                    actually means.
+                  </p>
+                </div>
+              </Panel>
+
+              <Panel padded="lg" className="feature-card h-full">
+                <div className="metric-badge">02</div>
+                <div className="feature-card-copy">
+                  <h3 className="feature-card-title">A clearer roadmap through connected market stories</h3>
+                  <p className="feature-card-body">
+                    Instead of isolated updates, Nova helps people follow how headlines, sectors, and themes connect
+                    over time.
+                  </p>
+                </div>
+              </Panel>
+
+              <Panel padded="lg" className="feature-card h-full">
+                <div className="metric-badge">03</div>
+                <div className="feature-card-copy">
+                  <h3 className="feature-card-title">One place to stay updated without feeling overwhelmed</h3>
+                  <p className="feature-card-body">
+                    The product gives readers a focused environment where they can keep up with the market at a pace
+                    that feels manageable.
+                  </p>
+                </div>
+              </Panel>
+            </div>
+
+            <div className="flex justify-center">
+              <Link className="btn btn-primary btn-lg" href="/sign-in">
+                Start your free trial
+              </Link>
+            </div>
+          </section>
+        </Reveal>
+
+        <Reveal delay={180}>
+          <section className="section-stack-lg" id="pricing">
+            <div className="section-intro-tight">
+              <div className="metric-badge">Pricing</div>
+              <div className="section-intro-tight">
+                <h2 className="section-title">Choose the level of market clarity you want.</h2>
+                <p className="body-copy max-w-2xl">
+                  Start with simple updates, unlock AI help as you grow, or move into a premium workspace built
+                  around the map.
+                </p>
+              </div>
+            </div>
+
+            <div className="page-grid-tight md:grid-cols-2 xl:grid-cols-3">
+              <Panel padded="lg" className="stack-20 h-full">
+                <div className="stack-12">
+                  <p className="section-label">Basic</p>
+                  <h3 className="h2">Normal updates</h3>
+                  <p className="pricing-value">$9<span className="pricing-period">/month</span></p>
+                </div>
+                <ul className="feature-list">
+                  <li>Beginner-friendly market updates</li>
+                  <li>Simple explainers for major headlines</li>
+                  <li>Clear context on what changed</li>
+                </ul>
+                <Link className="btn btn-secondary btn-lg" href="/sign-in">
+                  Choose Basic for $9
+                </Link>
+              </Panel>
+
+              <Panel padded="lg" className="stack-20 h-full">
+                <div className="stack-12">
+                  <p className="section-label">Plus</p>
+                  <h3 className="h2">AI features</h3>
+                  <p className="pricing-value">$19<span className="pricing-period">/month</span></p>
+                </div>
+                <ul className="feature-list">
+                  <li>Everything in Basic</li>
+                  <li>AI-assisted summaries and breakdowns</li>
+                  <li>Smarter connections across related stories</li>
+                </ul>
+                <Link className="btn btn-primary btn-lg" href="/sign-in">
+                  Choose Plus for $19
+                </Link>
+              </Panel>
+
+              <Panel padded="lg" className="stack-20 h-full md:col-span-2 xl:col-span-1">
+                <div className="stack-12">
+                  <p className="section-label">Premium</p>
+                  <h3 className="h2">Workspace map</h3>
+                  <p className="pricing-value">$49<span className="pricing-period">/month</span></p>
+                </div>
+                <ul className="feature-list">
+                  <li>Everything in Plus</li>
+                  <li>Interactive workspace-style market map</li>
+                  <li>Deeper story exploration and navigation</li>
+                </ul>
+                <Link className="btn btn-secondary btn-lg" href="/sign-in">
+                  Choose Premium for $49
+                </Link>
+              </Panel>
+            </div>
+          </section>
+        </Reveal>
+      </div>
+    </PageShell>
   );
 }
