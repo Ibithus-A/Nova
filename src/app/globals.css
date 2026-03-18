@@ -544,12 +544,12 @@ summary:focus-visible {
 .workspace-layout {
   display: grid;
   gap: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: 0;
+  border-radius: 0;
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: none;
   overflow: hidden;
-  min-height: 46rem;
+  min-height: 100vh;
 }
 
 .workspace-sidebar {
@@ -560,6 +560,8 @@ summary:focus-visible {
 }
 
 .workspace-main {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(252, 252, 253, 0.94));
 }
@@ -720,11 +722,12 @@ summary:focus-visible {
 }
 
 .workspace-graph-shell {
+  flex: 1;
   padding: 0;
 }
 
 .workspace-graph-stage {
-  min-height: 48rem;
+  min-height: 100%;
   border-radius: 0;
   background:
     radial-gradient(circle at top, rgba(0, 0, 0, 0.018), transparent 28%),
@@ -743,6 +746,10 @@ summary:focus-visible {
 .workspace-section {
   padding: 1.125rem 1.25rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.workspace-page {
+  min-height: 100vh;
 }
 
 .workspace-item {
@@ -1045,7 +1052,7 @@ summary:focus-visible {
 @media (max-width: 767px) {
   .workspace-layout {
     grid-template-columns: minmax(0, 1fr);
-    min-height: auto;
+    min-height: 100vh;
   }
 
   .workspace-sidebar {
@@ -1058,7 +1065,7 @@ summary:focus-visible {
   }
 
   .workspace-graph-stage {
-    min-height: 34rem;
+    min-height: 60vh;
   }
 
   .workspace-node {
