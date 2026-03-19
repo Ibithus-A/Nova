@@ -15,7 +15,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "rates",
     label: "What rising interest rates mean",
-    href: "/sign-in",
+    href: "/workspace",
     x: 50,
     y: 16,
     mobileX: 50,
@@ -24,7 +24,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "ai",
     label: "NVIDIA and AI demand explained",
-    href: "/sign-in",
+    href: "/workspace",
     x: 78,
     y: 30,
     mobileX: 73,
@@ -33,7 +33,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "trade",
     label: "China chip restrictions in plain English",
-    href: "/sign-in",
+    href: "/workspace",
     x: 77,
     y: 68,
     mobileX: 72,
@@ -42,7 +42,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "inflation",
     label: "Inflation update for beginners",
-    href: "/sign-in",
+    href: "/workspace",
     x: 26,
     y: 34,
     mobileX: 24,
@@ -51,7 +51,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "jobs",
     label: "Jobs data without the jargon",
-    href: "/sign-in",
+    href: "/workspace",
     x: 31,
     y: 66,
     mobileX: 27,
@@ -69,7 +69,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "banking",
     label: "Why banking moves markets",
-    href: "/sign-in",
+    href: "/workspace",
     x: 63,
     y: 38,
     mobileX: 62,
@@ -101,7 +101,7 @@ const nodeMap = new Map(graphNodes.map((node) => [node.id, node]));
 
 export function MarketingGraph() {
   return (
-    <section className="panel panel-pad-lg stack-24">
+    <section className="panel panel-pad-lg stack-24" id="live-map">
       <div className="stack-12">
         <div className="metric-badge">Live map</div>
         <div className="stack-12">

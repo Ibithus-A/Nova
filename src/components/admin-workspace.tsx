@@ -1,9 +1,15 @@
+"use client";
+
 import type { CSSProperties } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
   ChevronRight,
   CircleHelp,
+  FileText,
+  Folder,
+  FolderOpen,
   LayoutList,
   PanelLeftOpen,
   Plus,
@@ -23,13 +29,14 @@ type WorkspaceNode = {
   muted?: boolean;
 };
 
-type WorkspaceSection = {
+type SidebarItem = {
+  id: string;
   label: string;
-  expanded?: boolean;
-  children?: string[];
+  type: "folder" | "page";
+  children?: SidebarItem[];
 };
 
-const toolbarIcons = [SquarePen, Plus, Upload, PanelLeftOpen, LayoutList];
+const toolbarIcons = [SquarePen, Upload, PanelLeftOpen, LayoutList];
 
 const workspaceNodes: WorkspaceNode[] = [
   {
@@ -151,42 +158,210 @@ const workspaceEdges: Array<[string, string]> = [
   ["visa", "structure"],
 ];
 
-const sidebarSections: WorkspaceSection[] = [
-  { label: "Applications" },
-  { label: "Books" },
-  { label: "University" },
+const initialTree: SidebarItem[] = [
   {
-    label: "Wider Reading",
-    expanded: true,
-  },
-];
-
-const nestedSections: WorkspaceSection[] = [
-  {
+    id: "folder-finance",
+    type: "folder",
     label: "Finance",
-    expanded: true,
-    children: ["Corporate Finance", "Financial Models", "Investment Banking", "Structure And Roles"],
-  },
-  {
-    label: "News",
-    expanded: true,
     children: [
-      "China Ban On NVIDIA AI...",
-      "NVIDIA And OpenAI Par...",
-      "NVIDIA Investing $5bn i...",
-      "Rise Of Sentiment Base...",
-      "Trump Ban On H1b Visa ...",
+      { id: "page-corporate", type: "page", label: "Corporate Finance" },
+      { id: "page-models", type: "page", label: "Financial Models" },
+      { id: "page-banking", type: "page", label: "Investment Banking" },
     ],
   },
-  { label: "Politics" },
+  {
+    id: "folder-news",
+    type: "folder",
+    label: "News",
+    children: [
+      { id: "page-intel", type: "page", label: "NVIDIA Investing $5bn in Rival Intel" },
+      { id: "page-openai", type: "page", label: "NVIDIA And OpenAI Partnership Deal" },
+      { id: "page-china", type: "page", label: "China Ban On NVIDIA AI Chips" },
+    ],
+  },
+  {
+    id: "folder-university",
+    type: "folder",
+    label: "University",
+    children: [{ id: "page-tech-interview", type: "page", label: "Tech Interview Preparation" }],
+  },
 ];
 
 const nodeMap = new Map(workspaceNodes.map((node) => [node.id, node]));
 
+function addNodeToFolder(nodes: SidebarItem[], folderId: string, newNode: SidebarItem): SidebarItem[] {
+  return nodes.map((node) => {
+    if (node.type === "folder" && node.id === folderId) {
+      return {
+        ...node,
+        children: [...(node.children ?? []), newNode],
+      };
+    }
+
+    if (node.type === "folder" && node.children) {
+      return {
+        ...node,
+        children: addNodeToFolder(node.children, folderId, newNode),
+      };
+    }
+
+    return node;
+  });
+}
+
+function findFolderById(nodes: SidebarItem[], folderId: string): SidebarItem | undefined {
+  for (const node of nodes) {
+    if (node.type === "folder" && node.id === folderId) {
+      return node;
+    }
+
+    if (node.type === "folder" && node.children) {
+      const found = findFolderById(node.children, folderId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return undefined;
+}
+
 export function AdminWorkspace() {
+  const idRef = useRef(1);
+  const [tree, setTree] = useState<SidebarItem[]>(initialTree);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(
+    () => new Set(initialTree.filter((item) => item.type === "folder").map((item) => item.id)),
+  );
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(initialTree[0]?.id ?? "");
+
+  const selectedFolderLabel = useMemo(() => {
+    const selected = findFolderById(tree, selectedFolderId);
+    return selected?.label ?? "Root";
+  }, [selectedFolderId, tree]);
+
+  const toggleFolder = (folderId: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(folderId)) {
+        next.delete(folderId);
+      } else {
+        next.add(folderId);
+      }
+      return next;
+    });
+  };
+
+  const addFolder = (folderId: string) => {
+    const nextId = `folder-generated-${idRef.current}`;
+    idRef.current += 1;
+
+    setTree((prev) =>
+      addNodeToFolder(prev, folderId, {
+        id: nextId,
+        type: "folder",
+        label: `New Folder ${idRef.current - 1}`,
+        children: [],
+      }),
+    );
+    setExpandedIds((prev) => new Set(prev).add(folderId).add(nextId));
+    setSelectedFolderId(nextId);
+  };
+
+  const addPage = (folderId: string) => {
+    const nextId = `page-generated-${idRef.current}`;
+    idRef.current += 1;
+
+    setTree((prev) =>
+      addNodeToFolder(prev, folderId, {
+        id: nextId,
+        type: "page",
+        label: `Untitled Page ${idRef.current - 1}`,
+      }),
+    );
+    setExpandedIds((prev) => new Set(prev).add(folderId));
+    setSelectedFolderId(folderId);
+  };
+
+  const renderTree = (items: SidebarItem[], depth = 0) => {
+    return items.map((item) => {
+      const isFolder = item.type === "folder";
+      const isExpanded = isFolder ? expandedIds.has(item.id) : false;
+      const isSelectedFolder = isFolder && selectedFolderId === item.id;
+
+      return (
+        <div key={item.id} className="workspace-tree-group">
+          <div className={`workspace-tree-row${isSelectedFolder ? " workspace-tree-row-active" : ""}`}>
+            <div className="workspace-tree-item" style={{ paddingLeft: `${0.75 + depth * 0.85}rem` }}>
+              {isFolder ? (
+                <button
+                  aria-label={isExpanded ? "Collapse folder" : "Expand folder"}
+                  className="workspace-tree-toggle"
+                  onClick={() => toggleFolder(item.id)}
+                  type="button"
+                >
+                  {isExpanded ? <ChevronDown size={14} strokeWidth={2} /> : <ChevronRight size={14} strokeWidth={2} />}
+                </button>
+              ) : (
+                <span className="workspace-tree-spacer" aria-hidden="true" />
+              )}
+
+              <button
+                className="workspace-tree-label"
+                onClick={() => {
+                  if (isFolder) {
+                    setSelectedFolderId(item.id);
+                  }
+                }}
+                type="button"
+              >
+                {isFolder ? (
+                  isExpanded ? (
+                    <FolderOpen className="workspace-tree-type" size={14} strokeWidth={1.9} />
+                  ) : (
+                    <Folder className="workspace-tree-type" size={14} strokeWidth={1.9} />
+                  )
+                ) : (
+                  <FileText className="workspace-tree-type" size={14} strokeWidth={1.9} />
+                )}
+                <span>{item.label}</span>
+              </button>
+            </div>
+
+            {isFolder ? (
+              <div className="workspace-tree-actions">
+                <button
+                  aria-label="Add page"
+                  className="workspace-tree-action"
+                  onClick={() => addPage(item.id)}
+                  type="button"
+                >
+                  <FileText size={13} strokeWidth={1.9} />
+                </button>
+                <button
+                  aria-label="Add folder"
+                  className="workspace-tree-action"
+                  onClick={() => addFolder(item.id)}
+                  type="button"
+                >
+                  <Folder size={13} strokeWidth={1.9} />
+                </button>
+              </div>
+            ) : null}
+          </div>
+
+          {isFolder && isExpanded && item.children?.length ? (
+            <div className="workspace-nested">{renderTree(item.children, depth + 1)}</div>
+          ) : null}
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="workspace-layout">
-      <aside className="workspace-sidebar">
+      <aside className="workspace-sidebar" aria-label="Workspace navigation">
+        <div className="workspace-sidebar-peek" aria-hidden="true" />
+
         <div className="workspace-toolbar">
           <div className="workspace-icon-row">
             {toolbarIcons.map((Icon, index) => (
@@ -194,54 +369,24 @@ export function AdminWorkspace() {
                 <Icon size={18} strokeWidth={1.8} />
               </button>
             ))}
-            <button aria-label="More options" className="workspace-icon-button" type="button">
-              <ChevronDown size={18} strokeWidth={1.8} />
+            <button
+              aria-label="Add page to selected folder"
+              className="workspace-icon-button"
+              onClick={() => addPage(selectedFolderId)}
+              type="button"
+            >
+              <Plus size={18} strokeWidth={1.8} />
             </button>
           </div>
         </div>
 
         <div className="workspace-sidebar-scroll">
-          <div className="workspace-tree">
-            {sidebarSections.map((section) => (
-              <div key={section.label} className="workspace-tree-group">
-                <div className="workspace-tree-item">
-                  {section.expanded ? (
-                    <ChevronDown className="workspace-tree-chevron" size={18} strokeWidth={1.7} />
-                  ) : (
-                    <ChevronRight className="workspace-tree-chevron" size={18} strokeWidth={1.7} />
-                  )}
-                  <span>{section.label}</span>
-                </div>
-
-                {section.expanded ? (
-                  <div className="workspace-nested">
-                    {nestedSections.map((nested) => (
-                      <div key={nested.label} className="workspace-tree-group">
-                        <div className="workspace-tree-item">
-                          {nested.expanded ? (
-                            <ChevronDown className="workspace-tree-chevron" size={18} strokeWidth={1.7} />
-                          ) : (
-                            <ChevronRight className="workspace-tree-chevron" size={18} strokeWidth={1.7} />
-                          )}
-                          <span>{nested.label}</span>
-                        </div>
-
-                        {nested.children ? (
-                          <div className="workspace-tree-children">
-                            {nested.children.map((child) => (
-                              <div key={child} className="workspace-tree-leaf">
-                                {child}
-                              </div>
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
+          <div className="workspace-tree-header">
+            <p className="workspace-tree-title">Workspace</p>
+            <p className="workspace-tree-subtitle">Selected: {selectedFolderLabel}</p>
           </div>
+
+          <div className="workspace-tree">{renderTree(tree)}</div>
         </div>
 
         <div className="workspace-profile">

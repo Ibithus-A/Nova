@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 import { MarketingGraph } from "@/components/marketing-graph";
@@ -5,6 +8,36 @@ import { PageHeader, PageShell, Panel } from "@/components/page-shell";
 import { Reveal } from "@/components/reveal";
 
 export default function HomePage() {
+  const [showLiveMap, setShowLiveMap] = useState(false);
+  const shouldScrollToMapRef = useRef(false);
+
+  useEffect(() => {
+    const revealOnScroll = () => {
+      if (window.scrollY > 120) {
+        setShowLiveMap(true);
+      }
+    };
+
+    window.addEventListener("scroll", revealOnScroll, { passive: true });
+    revealOnScroll();
+
+    return () => {
+      window.removeEventListener("scroll", revealOnScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showLiveMap || !shouldScrollToMapRef.current) {
+      return;
+    }
+
+    document.getElementById("live-map")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+    shouldScrollToMapRef.current = false;
+  }, [showLiveMap]);
+
   return (
     <PageShell>
       <div className="content-shell stack-56">
@@ -15,20 +48,37 @@ export default function HomePage() {
             description="Nova helps people understand major financial developments without the jargon. We break down fast-moving market news, explain why it matters, and keep readers updated in language beginners can actually follow."
             actions={
               <>
-                <Link className="btn btn-primary btn-lg" href="/sign-in">
-                  Sign in
+                <Link className="btn btn-primary btn-lg" href="#">
+                  Get started
                 </Link>
-                <Link className="btn btn-secondary btn-lg" href="#product-overview">
+                <button
+                  className="btn btn-secondary btn-lg"
+                  onClick={() => {
+                    if (showLiveMap) {
+                      document.getElementById("live-map")?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                      return;
+                    }
+
+                    shouldScrollToMapRef.current = true;
+                    setShowLiveMap(true);
+                  }}
+                  type="button"
+                >
                   Learn more
-                </Link>
+                </button>
               </>
             }
           />
         </Reveal>
 
-        <Reveal delay={60}>
-          <MarketingGraph />
-        </Reveal>
+        {showLiveMap ? (
+          <Reveal delay={60}>
+            <MarketingGraph />
+          </Reveal>
+        ) : null}
 
         <Reveal delay={100}>
           <Panel padded="lg" className="section-intro" id="product-overview">
@@ -90,8 +140,8 @@ export default function HomePage() {
             </div>
 
             <div className="flex justify-center">
-              <Link className="btn btn-primary btn-lg" href="/sign-in">
-                Start your free trial
+              <Link className="btn btn-primary btn-lg" href="/workspace">
+                Open workspace
               </Link>
             </div>
           </section>
@@ -122,7 +172,7 @@ export default function HomePage() {
                   <li>Simple explainers for major headlines</li>
                   <li>Clear context on what changed</li>
                 </ul>
-                <Link className="btn btn-secondary btn-lg" href="/sign-in">
+                <Link className="btn btn-secondary btn-lg" href="/workspace">
                   Choose Basic for $9
                 </Link>
               </Panel>
@@ -138,7 +188,7 @@ export default function HomePage() {
                   <li>AI-assisted summaries and breakdowns</li>
                   <li>Smarter connections across related stories</li>
                 </ul>
-                <Link className="btn btn-primary btn-lg" href="/sign-in">
+                <Link className="btn btn-primary btn-lg" href="/workspace">
                   Choose Plus for $19
                 </Link>
               </Panel>
@@ -154,7 +204,7 @@ export default function HomePage() {
                   <li>Interactive workspace-style market map</li>
                   <li>Deeper story exploration and navigation</li>
                 </ul>
-                <Link className="btn btn-secondary btn-lg" href="/sign-in">
+                <Link className="btn btn-secondary btn-lg" href="/workspace">
                   Choose Premium for $49
                 </Link>
               </Panel>
