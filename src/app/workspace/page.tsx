@@ -1,3 +1,5 @@
+import { WorkspaceAuthGuard } from "@/components/workspace-auth-guard";
+
 export default function WorkspacePage() {
-  return <main id="main-content" className="workspace-page" />;
+  return <WorkspaceAuthGuard />;
 }

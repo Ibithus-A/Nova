@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 
+import { AuthCtaLink } from "@/components/auth-cta-link";
 import { MarketingGraph } from "@/components/marketing-graph";
 import { PageHeader, PageShell, Panel } from "@/components/page-shell";
 import { Reveal } from "@/components/reveal";
@@ -48,9 +48,7 @@ export default function HomePage() {
             description="Nova helps people understand major financial developments without the jargon. We break down fast-moving market news, explain why it matters, and keep readers updated in language beginners can actually follow."
             actions={
               <>
-                <Link className="btn btn-primary btn-lg" href="#">
-                  Get started
-                </Link>
+                <AuthCtaLink className="btn btn-primary btn-lg">Get started</AuthCtaLink>
                 <button
                   className="btn btn-secondary btn-lg"
                   onClick={() => {
@@ -81,7 +79,7 @@ export default function HomePage() {
         ) : null}
 
         <Reveal delay={100}>
-          <Panel padded="lg" className="section-intro" id="product-overview">
+          <div id="product-overview"><Panel padded="lg" className="section-intro">
             <div className="metric-badge">What we do</div>
             <div className="section-intro">
               <h2 className="section-title">We turn confusing financial headlines into simple explanations.</h2>
@@ -91,7 +89,7 @@ export default function HomePage() {
                 what to keep watching.
               </p>
             </div>
-          </Panel>
+          </Panel></div>
         </Reveal>
 
         <Reveal delay={140}>
@@ -140,9 +138,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex justify-center">
-              <Link className="btn btn-primary btn-lg" href="/workspace">
-                Open workspace
-              </Link>
+              <AuthCtaLink className="btn btn-primary btn-lg">Open workspace</AuthCtaLink>
             </div>
           </section>
         </Reveal>
@@ -172,9 +168,7 @@ export default function HomePage() {
                   <li>Simple explainers for major headlines</li>
                   <li>Clear context on what changed</li>
                 </ul>
-                <Link className="btn btn-secondary btn-lg" href="/workspace">
-                  Choose Basic for $9
-                </Link>
+                <AuthCtaLink className="btn btn-secondary btn-lg">Choose Basic for $9</AuthCtaLink>
               </Panel>
 
               <Panel padded="lg" className="stack-20 h-full">
@@ -188,9 +182,7 @@ export default function HomePage() {
                   <li>AI-assisted summaries and breakdowns</li>
                   <li>Smarter connections across related stories</li>
                 </ul>
-                <Link className="btn btn-primary btn-lg" href="/workspace">
-                  Choose Plus for $19
-                </Link>
+                <AuthCtaLink className="btn btn-primary btn-lg">Choose Plus for $19</AuthCtaLink>
               </Panel>
 
               <Panel padded="lg" className="stack-20 h-full md:col-span-2 xl:col-span-1">
@@ -204,9 +196,7 @@ export default function HomePage() {
                   <li>Interactive workspace-style market map</li>
                   <li>Deeper story exploration and navigation</li>
                 </ul>
-                <Link className="btn btn-secondary btn-lg" href="/workspace">
-                  Choose Premium for $49
-                </Link>
+                <AuthCtaLink className="btn btn-secondary btn-lg">Choose Premium for $49</AuthCtaLink>
               </Panel>
             </div>
           </section>

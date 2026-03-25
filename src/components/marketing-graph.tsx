@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { buildSignInHref } from "@/lib/auth";
+
 type GraphNode = {
   id: string;
   label: string;
@@ -15,7 +17,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "rates",
     label: "What rising interest rates mean",
-    href: "/workspace",
+    href: buildSignInHref("/workspace"),
     x: 50,
     y: 16,
     mobileX: 50,
@@ -24,7 +26,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "ai",
     label: "NVIDIA and AI demand explained",
-    href: "/workspace",
+    href: buildSignInHref("/workspace"),
     x: 78,
     y: 30,
     mobileX: 73,
@@ -33,7 +35,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "trade",
     label: "China chip restrictions in plain English",
-    href: "/workspace",
+    href: buildSignInHref("/workspace"),
     x: 77,
     y: 68,
     mobileX: 72,
@@ -42,7 +44,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "inflation",
     label: "Inflation update for beginners",
-    href: "/workspace",
+    href: buildSignInHref("/workspace"),
     x: 26,
     y: 34,
     mobileX: 24,
@@ -51,7 +53,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "jobs",
     label: "Jobs data without the jargon",
-    href: "/workspace",
+    href: buildSignInHref("/workspace"),
     x: 31,
     y: 66,
     mobileX: 27,
@@ -69,7 +71,7 @@ const graphNodes: GraphNode[] = [
   {
     id: "banking",
     label: "Why banking moves markets",
-    href: "/workspace",
+    href: buildSignInHref("/workspace"),
     x: 63,
     y: 38,
     mobileX: 62,
