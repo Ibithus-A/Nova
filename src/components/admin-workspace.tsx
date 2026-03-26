@@ -377,6 +377,32 @@ const MIN_GRAPH_SCALE = 0.6;
 const MAX_GRAPH_SCALE = 8;
 const GRAPH_ZOOM_PRESETS = [60, 80, 100, 125, 150, 200];
 
+/* ── Simulation physics ── */
+/** Energy multiplier per tick — controls how quickly the simulation cools */
+const SIM_ALPHA_DECAY = 0.978;
+/** Velocity damping applied each tick */
+const SIM_VELOCITY_DAMPING = 0.88;
+/** Force multiplier applied when nodes overlap */
+const SIM_COLLISION_FORCE = 1.35;
+/** Repel base coefficient relative to nodeSize */
+const SIM_REPEL_SIZE_BASE = 0.7;
+/** Repel scale coefficient relative to nodeSize */
+const SIM_REPEL_SIZE_SCALE = 0.6;
+
+/* ── Initial node placement ── */
+/** Fraction of the smaller canvas dimension used as the initial ring radius */
+const INITIAL_RING_RADIUS_RATIO = 0.28;
+/** Random position jitter applied to each node on initial mount */
+const INITIAL_NODE_JITTER = 30;
+/** Radius of the ring used when spawning nodes added via tree changes */
+const SIM_NEW_NODE_RING_RADIUS = 140;
+/** Half-spread used when spawning a newly created page node */
+const SIM_CREATED_NODE_SPREAD = 120;
+
+/* ── Animation ── */
+/** Duration in ms for the smooth camera-focus animation */
+const FOCUS_ANIMATION_MS = 380;
+
 /* ─────────────────────────── Component ─────────────────────── */
 
 export function AdminWorkspace() {
@@ -434,17 +460,17 @@ export function AdminWorkspace() {
   /* ── Drag / pan state ── */
   const [dragState, setDragState] = useState<{
     nodeId: string;
-    sx: number;
-    sy: number;
-    snx: number;
-    sny: number;
+    startX: number;
+    startY: number;
+    startNodeX: number;
+    startNodeY: number;
     moved: boolean;
   } | null>(null);
   const [panState, setPanState] = useState<{
-    sx: number;
-    sy: number;
-    stx: number;
-    sty: number;
+    startX: number;
+    startY: number;
+    startTransformX: number;
+    startTransformY: number;
   } | null>(null);
 
   /* ── Context menu ── */
@@ -529,7 +555,7 @@ export function AdminWorkspace() {
       const alpha = alphaRef.current;
       const pinnedId = draggedIdRef.current;
 
-      alphaRef.current = Math.max(0, alpha * 0.978);
+      alphaRef.current = Math.max(0, alpha * SIM_ALPHA_DECAY);
 
       if (alpha > 0.001) {
         // Read live force settings from Zustand without triggering re-renders
@@ -542,7 +568,7 @@ export function AdminWorkspace() {
         const linkDist = forceFromNorm.distance(linkDistance);
         const centerK = forceFromNorm.center(centerForce);
         // Scale node repulsion slightly with nodeSize
-        const repelScale = 0.7 + 0.6 * nodeSize;
+        const repelScale = SIM_REPEL_SIZE_BASE + SIM_REPEL_SIZE_SCALE * nodeSize;
 
         // Repulsion between all pairs
         for (let i = 0; i < nodes.length; i++) {
@@ -564,7 +590,7 @@ export function AdminWorkspace() {
 
             if (dist < minSpacing) {
               const overlap = (minSpacing - dist) / minSpacing;
-              const collisionF = overlap * 1.35 * alpha;
+              const collisionF = overlap * SIM_COLLISION_FORCE * alpha;
               const cfx = (dx / dist) * collisionF;
               const cfy = (dy / dist) * collisionF;
               if (a.id !== pinnedId) { a.vx -= cfx; a.vy -= cfy; }
@@ -590,8 +616,8 @@ export function AdminWorkspace() {
           if (n.id === pinnedId) continue;
           n.vx += (CANVAS_W / 2 - n.x) * centerK * alpha;
           n.vy += (CANVAS_H / 2 - n.y) * centerK * alpha;
-          n.vx *= 0.88;
-          n.vy *= 0.88;
+          n.vx *= SIM_VELOCITY_DAMPING;
+          n.vy *= SIM_VELOCITY_DAMPING;
           n.x += n.vx;
           n.y += n.vy;
         }
@@ -645,8 +671,8 @@ export function AdminWorkspace() {
       const angle = Math.random() * Math.PI * 2;
       return {
         id,
-        x: CANVAS_W / 2 + 140 * Math.cos(angle),
-        y: CANVAS_H / 2 + 140 * Math.sin(angle),
+        x: CANVAS_W / 2 + SIM_NEW_NODE_RING_RADIUS * Math.cos(angle),
+        y: CANVAS_H / 2 + SIM_NEW_NODE_RING_RADIUS * Math.sin(angle),
         vx: 0,
         vy: 0,
       };
@@ -662,11 +688,11 @@ export function AdminWorkspace() {
     const allPgs = getAllPagesFlat(initialTree);
     const nodes: SimNode[] = allPgs.map((p, i) => {
       const angle = (i / allPgs.length) * Math.PI * 2;
-      const r = Math.min(CANVAS_W, CANVAS_H) * 0.28;
+      const r = Math.min(CANVAS_W, CANVAS_H) * INITIAL_RING_RADIUS_RATIO;
       return {
         id: p.id,
-        x: CANVAS_W / 2 + r * Math.cos(angle) + (Math.random() - 0.5) * 30,
-        y: CANVAS_H / 2 + r * Math.sin(angle) + (Math.random() - 0.5) * 30,
+        x: CANVAS_W / 2 + r * Math.cos(angle) + (Math.random() - 0.5) * INITIAL_NODE_JITTER,
+        y: CANVAS_H / 2 + r * Math.sin(angle) + (Math.random() - 0.5) * INITIAL_NODE_JITTER,
         vx: 0,
         vy: 0,
       };
@@ -848,7 +874,7 @@ export function AdminWorkspace() {
     const startY = currentT.y;
     const startScale = currentT.scale;
     const startTime = performance.now();
-    const duration = 380;
+    const duration = FOCUS_ANIMATION_MS;
 
     cancelAnimationFrame(focusAnimRef.current);
 
@@ -1030,8 +1056,8 @@ export function AdminWorkspace() {
     }));
     const newNode: SimNode = {
       id,
-      x: CANVAS_W / 2 + (Math.random() - 0.5) * 120,
-      y: CANVAS_H / 2 + (Math.random() - 0.5) * 120,
+      x: CANVAS_W / 2 + (Math.random() - 0.5) * SIM_CREATED_NODE_SPREAD,
+      y: CANVAS_H / 2 + (Math.random() - 0.5) * SIM_CREATED_NODE_SPREAD,
       vx: 0,
       vy: 0,
     };
@@ -1102,10 +1128,6 @@ export function AdminWorkspace() {
     const id = createPage("Untitled", parentId);
     openPage(id, "reset");
   }, [createPage, openPage]);
-
-  const addPageWithTitle = useCallback((title: string, parentId: string | null = null) => {
-    return createPage(title, parentId);
-  }, [createPage]);
 
   const navigatePageHistory = useCallback((direction: -1 | 1) => {
     const currentHistory = pageHistoryRef.current;
@@ -1270,7 +1292,7 @@ export function AdminWorkspace() {
     if (command.kind === "page-link" || command.kind === "create-page-link") {
       const pageId =
         command.kind === "create-page-link"
-          ? addPageWithTitle(command.label)
+          ? createPage(command.label)
           : command.id;
       insertPageLink(pageId, command.label);
       return;
@@ -1317,7 +1339,7 @@ export function AdminWorkspace() {
         '<div class="ws-block-embed"><strong>PDF Embed</strong><span>Add your PDF link or upload flow here.</span></div>',
       );
     }
-  }, [addPageWithTitle, insertBlockFromSlash, insertPageLink]);
+  }, [createPage, insertBlockFromSlash, insertPageLink]);
 
   /* ─── Arthur ─── */
 
@@ -1344,7 +1366,7 @@ export function AdminWorkspace() {
     if (e.button !== 0) return;
     setGraphHighlightId(null);
     setContextMenu(null);
-    setPanState({ sx: e.clientX, sy: e.clientY, stx: transform.x, sty: transform.y });
+    setPanState({ startX: e.clientX, startY: e.clientY, startTransformX: transform.x, startTransformY: transform.y });
   };
 
   const handleNodeMouseDown = (
@@ -1359,10 +1381,10 @@ export function AdminWorkspace() {
     draggedIdRef.current = nodeId;
     setDragState({
       nodeId,
-      sx: e.clientX,
-      sy: e.clientY,
-      snx: pos.x,
-      sny: pos.y,
+      startX: e.clientX,
+      startY: e.clientY,
+      startNodeX: pos.x,
+      startNodeY: pos.y,
       moved: false,
     });
   };
@@ -1378,12 +1400,12 @@ export function AdminWorkspace() {
 
   const handleSvgMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     if (dragState) {
-      const dx = e.clientX - dragState.sx;
-      const dy = e.clientY - dragState.sy;
+      const dx = e.clientX - dragState.startX;
+      const dy = e.clientY - dragState.startY;
       if (!dragState.moved && Math.hypot(dx, dy) < 4) return;
       setDragState((prev) => (prev ? { ...prev, moved: true } : prev));
-      const newX = dragState.snx + dx / transformRef.current.scale;
-      const newY = dragState.sny + dy / transformRef.current.scale;
+      const newX = dragState.startNodeX + dx / transformRef.current.scale;
+      const newY = dragState.startNodeY + dy / transformRef.current.scale;
       const simNode = simNodeMapRef.current.get(dragState.nodeId);
       if (simNode) { simNode.x = newX; simNode.y = newY; simNode.vx = 0; simNode.vy = 0; }
       setNodePositions((prev) => {
@@ -1394,8 +1416,8 @@ export function AdminWorkspace() {
     } else if (panState) {
       setTransform((prev) => ({
         ...prev,
-        x: panState.stx + (e.clientX - panState.sx),
-        y: panState.sty + (e.clientY - panState.sy),
+        x: panState.startTransformX + (e.clientX - panState.startX),
+        y: panState.startTransformY + (e.clientY - panState.startY),
       }));
     }
   };
@@ -1678,6 +1700,14 @@ export function AdminWorkspace() {
 
   /* ─── Sidebar tree renderer ─── */
 
+  const toggleFolderExpanded = useCallback((id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      return next;
+    });
+  }, []);
+
   const renderTree = (items: SidebarItem[], depth = 0): React.ReactNode =>
     items.map((item) => {
       const isFolder = item.type === "folder";
@@ -1701,14 +1731,7 @@ export function AdminWorkspace() {
           >
             <button
               className="ws-tree-expand"
-              onClick={() => {
-                if (isFolder)
-                  setExpandedIds((prev) => {
-                    const next = new Set(prev);
-                    if (next.has(item.id)) { next.delete(item.id); } else { next.add(item.id); }
-                    return next;
-                  });
-              }}
+              onClick={() => { if (isFolder) toggleFolderExpanded(item.id); }}
               type="button"
               tabIndex={isFolder ? 0 : -1}
               aria-label={isFolder ? (isExpanded ? "Collapse" : "Expand") : undefined}
@@ -1752,11 +1775,7 @@ export function AdminWorkspace() {
                 className="ws-tree-label-btn"
                 onClick={() => {
                   if (isFolder) {
-                    setExpandedIds((prev) => {
-                      const next = new Set(prev);
-                      if (next.has(item.id)) { next.delete(item.id); } else { next.add(item.id); }
-                      return next;
-                    });
+                    toggleFolderExpanded(item.id);
                   } else {
                     openPage(item.id);
                   }
