@@ -412,6 +412,7 @@ export function AdminWorkspace() {
   const [pages, setPages] = useState<Record<string, PageData>>(initialPages);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
+  const [renameOriginalValue, setRenameOriginalValue] = useState("");
   const [sidebarDragSrc, setSidebarDragSrc] = useState<string | null>(null);
   const [sidebarDropTarget, setSidebarDropTarget] = useState<string | null>(null);
 
@@ -1133,6 +1134,7 @@ export function AdminWorkspace() {
     setExpandedIds((prev) => new Set(prev).add(id));
     setRenamingId(id);
     setRenameValue("New Folder");
+    setRenameOriginalValue("New Folder");
   };
 
   const deleteItem = (id: string, type: "folder" | "page") => {
@@ -1159,7 +1161,24 @@ export function AdminWorkspace() {
     if (type === "page")
       setPages((prev) => ({ ...prev, [id]: { ...prev[id], title: val } }));
     setRenamingId(null);
+    setRenameOriginalValue("");
   };
+
+  const cancelRename = useCallback((id: string, type: "folder" | "page") => {
+    if (type === "page") {
+      setPages((prev) => ({ ...prev, [id]: { ...prev[id], title: renameOriginalValue } }));
+    }
+
+    setRenameValue(renameOriginalValue);
+    setRenamingId(null);
+    setRenameOriginalValue("");
+  }, [renameOriginalValue]);
+
+  const startRename = useCallback((id: string, label: string) => {
+    setRenamingId(id);
+    setRenameValue(label);
+    setRenameOriginalValue(label);
+  }, []);
 
   const updatePage = useCallback((id: string, patch: Partial<PageData>) => {
     setPages((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
@@ -1710,11 +1729,20 @@ export function AdminWorkspace() {
                 ref={renameInputRef}
                 className="ws-rename-input"
                 value={renameValue}
-                onChange={(e) => setRenameValue(e.target.value)}
+                onChange={(e) => {
+                  const nextValue = e.target.value;
+                  setRenameValue(nextValue);
+                  if (item.type === "page") {
+                    setPages((prev) => ({
+                      ...prev,
+                      [item.id]: { ...prev[item.id], title: nextValue },
+                    }));
+                  }
+                }}
                 onBlur={() => commitRename(item.id, item.type)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") commitRename(item.id, item.type);
-                  if (e.key === "Escape") setRenamingId(null);
+                  if (e.key === "Escape") cancelRename(item.id, item.type);
                 }}
                 onClick={(e) => e.stopPropagation()}
                 aria-label="Rename"
@@ -1734,8 +1762,7 @@ export function AdminWorkspace() {
                   }
                 }}
                 onDoubleClick={() => {
-                  setRenamingId(item.id);
-                  setRenameValue(label);
+                  startRename(item.id, label);
                 }}
                 type="button"
               >
@@ -2647,8 +2674,7 @@ export function AdminWorkspace() {
                 (p) => p.id === contextMenu.nodeId,
               );
               if (item) {
-                setRenamingId(item.id);
-                setRenameValue(pages[item.id]?.title ?? item.label);
+                startRename(item.id, pages[item.id]?.title ?? item.label);
                 setView("graph");
               }
               setContextMenu(null);
