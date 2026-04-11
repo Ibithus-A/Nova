@@ -1,11 +1,12 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
   Plus,
   RotateCcw,
+  Search,
   Trash2,
   X,
 } from "lucide-react";
@@ -187,6 +188,12 @@ export function GraphSettingsPanel({
 }) {
   const store = useGraphStore();
   const baseId = useId();
+  const [tagSearch, setTagSearch] = useState("");
+
+  const filteredTags = useMemo(() => {
+    const q = tagSearch.trim().toLowerCase();
+    return q ? availableTags.filter((t) => t.toLowerCase().includes(q)) : availableTags;
+  }, [availableTags, tagSearch]);
 
   const [sections, setSections] = useState({
     filters: true,
@@ -259,30 +266,77 @@ export function GraphSettingsPanel({
                 onChange={(v) => store.set({ showOrphans: v })}
               />
               <div className="gsp-filter-block">
-                <label htmlFor={`${baseId}-tagfilter`} className="gsp-slider-label">
-                  Tag filter
-                </label>
-                <div className="gsp-select-wrap">
-                  <select
-                    id={`${baseId}-tagfilter`}
-                    className="gsp-select"
-                    value={activeTag ?? ""}
-                    onChange={(event) => onActiveTagChange(event.target.value || null)}
-                  >
-                    <option value="">All tags</option>
-                    {availableTags.map((tag) => (
-                      <option key={tag} value={tag}>
-                        {tag}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={13}
-                    strokeWidth={2}
-                    className="gsp-select-icon"
-                    aria-hidden="true"
-                  />
+                <div className="gsp-tag-filter-header">
+                  <span className="gsp-slider-label">Tag filter</span>
+                  {activeTag && (
+                    <button
+                      className="gsp-tag-clear"
+                      onClick={() => { onActiveTagChange(null); setTagSearch(""); }}
+                      type="button"
+                      title="Clear filter"
+                    >
+                      <X size={10} strokeWidth={2.5} /> Clear
+                    </button>
+                  )}
                 </div>
+                {activeTag && (
+                  <div className="gsp-active-tag-row">
+                    <span className="gsp-active-tag">
+                      {activeTag}
+                      <button
+                        className="gsp-active-tag-remove"
+                        onClick={() => { onActiveTagChange(null); setTagSearch(""); }}
+                        type="button"
+                        aria-label="Remove filter"
+                      >
+                        <X size={9} strokeWidth={2.5} />
+                      </button>
+                    </span>
+                  </div>
+                )}
+                <div className="gsp-tag-search-wrap">
+                  <Search size={11} strokeWidth={2} className="gsp-tag-search-icon" aria-hidden="true" />
+                  <input
+                    className="gsp-tag-search"
+                    placeholder="Search tags…"
+                    value={tagSearch}
+                    onChange={(e) => setTagSearch(e.target.value)}
+                    aria-label="Search tags"
+                  />
+                  {tagSearch && (
+                    <button
+                      className="gsp-tag-search-clear"
+                      onClick={() => setTagSearch("")}
+                      type="button"
+                      aria-label="Clear search"
+                    >
+                      <X size={10} strokeWidth={2.5} />
+                    </button>
+                  )}
+                </div>
+                {tagSearch.trim() ? (
+                  filteredTags.length > 0 ? (
+                    <div className="gsp-tag-chips">
+                      {filteredTags.map((tag) => (
+                        <button
+                          key={tag}
+                          className={`gsp-tag-chip${activeTag === tag ? " gsp-tag-chip-active" : ""}`}
+                          onClick={() => onActiveTagChange(activeTag === tag ? null : tag)}
+                          type="button"
+                          title={`Filter by "${tag}"`}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="gsp-hint" style={{ marginTop: "0.35rem" }}>No tags match.</p>
+                  )
+                ) : (
+                  !activeTag && (
+                    <p className="gsp-hint" style={{ marginTop: "0.35rem" }}>Type to search tags.</p>
+                  )
+                )}
               </div>
             </div>
           )}

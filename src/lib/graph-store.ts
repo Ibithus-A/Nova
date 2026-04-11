@@ -43,7 +43,7 @@ export const GRAPH_DEFAULTS: GraphSettings = {
   showArrows: false,
   textFadeThreshold: 0.45,
   nodeSize: 1.0,
-  linkThickness: 1.0,
+  linkThickness: 0.5,
   centerForce: 0.5,
   repelForce: 1,
   linkForce: 0,
@@ -75,7 +75,7 @@ export const useGraphStore = create<GraphStore>()(
     }),
     {
       name: "nova-graph-settings",
-      version: 3,
+      version: 4,
       migrate: (persistedState) => {
         const state = persistedState as Partial<GraphStore> | undefined;
 
@@ -84,6 +84,7 @@ export const useGraphStore = create<GraphStore>()(
           ...state,
           repelForce: GRAPH_DEFAULTS.repelForce,
           linkForce: GRAPH_DEFAULTS.linkForce,
+          linkThickness: GRAPH_DEFAULTS.linkThickness,
         };
       },
     },

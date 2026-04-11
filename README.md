@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Cohere setup
+
+Arthur now uses Cohere on the server side, so add a `.env.local` file in the project root with:
+
+```bash
+COHERE_API_KEY=your_cohere_api_key_here
+```
+
+Then run:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000/workspace`, select a page, and use the Arthur panel on the right to ask questions about the current page or your workspace notes.
+
 ## Getting Started
 
 First, run the development server:

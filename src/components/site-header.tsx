@@ -7,7 +7,7 @@ import { HomeLogoLink } from "@/components/home-logo-link";
 export function SiteHeader() {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/workspace")) {
+  if (pathname === "/" || pathname.startsWith("/workspace")) {
     return null;
   }
 

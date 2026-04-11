@@ -9,6 +9,7 @@ import {
   AUTH_STORAGE_KEY,
   DEFAULT_AUTH_REDIRECT,
   createLocalAuthSession,
+  notifyAuthStateChanged,
 } from "@/lib/auth";
 
 const trustSignals = [
@@ -33,6 +34,7 @@ export function SignInPortal({ redirectTo = DEFAULT_AUTH_REDIRECT }: SignInPorta
 
     const safeEmail = email.trim() || "reader@nova.ai";
     window.localStorage.setItem(AUTH_STORAGE_KEY, createLocalAuthSession(safeEmail));
+    notifyAuthStateChanged();
 
     router.push(redirectTo);
   };
@@ -43,6 +45,7 @@ export function SignInPortal({ redirectTo = DEFAULT_AUTH_REDIRECT }: SignInPorta
       AUTH_STORAGE_KEY,
       createLocalAuthSession("guest@nova.local"),
     );
+    notifyAuthStateChanged();
     router.push(redirectTo);
   };
 

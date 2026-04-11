@@ -7,11 +7,13 @@ type RevealProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
+  onVisible?: () => void;
 };
 
-export function Reveal({ children, className = "", delay = 0 }: RevealProps) {
+export function Reveal({ children, className = "", delay = 0, onVisible }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const hasNotifiedRef = useRef(false);
 
   useEffect(() => {
     const node = ref.current;
@@ -27,6 +29,10 @@ export function Reveal({ children, className = "", delay = 0 }: RevealProps) {
         }
 
         setIsVisible(true);
+        if (!hasNotifiedRef.current) {
+          hasNotifiedRef.current = true;
+          onVisible?.();
+        }
         observer.disconnect();
       },
       {
@@ -38,7 +44,7 @@ export function Reveal({ children, className = "", delay = 0 }: RevealProps) {
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, []);
+  }, [onVisible]);
 
   return (
     <div

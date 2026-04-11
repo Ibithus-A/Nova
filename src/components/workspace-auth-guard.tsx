@@ -4,23 +4,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 
 import { AdminWorkspace } from "@/components/admin-workspace";
-import { AUTH_STORAGE_KEY, buildSignInHref } from "@/lib/auth";
-
-function subscribeToAuthState(onStoreChange: () => void) {
-  window.addEventListener("storage", onStoreChange);
-
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-  };
-}
-
-function getAuthSessionSnapshot() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  return window.localStorage.getItem(AUTH_STORAGE_KEY);
-}
+import { getAuthSessionSnapshot, subscribeToAuthState } from "@/lib/auth";
 
 export function WorkspaceAuthGuard() {
   const router = useRouter();
@@ -35,7 +19,7 @@ export function WorkspaceAuthGuard() {
       return;
     }
 
-    router.replace(buildSignInHref("/workspace"));
+    router.replace("/");
   }, [authSession, router]);
 
   if (authSession) {
