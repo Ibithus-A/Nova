@@ -14,7 +14,7 @@ Then run:
 npm run dev
 ```
 
-Open `http://localhost:3000/workspace`, select a page, and use the Arthur panel on the right to ask questions about the current page or your workspace notes.
+This starts Next.js and opens `http://localhost:3000/workspace` in Google Chrome. Select a page, and use the Arthur panel on the right to ask questions about the current page or your workspace notes.
 
 ## Getting Started
 
@@ -22,6 +22,17 @@ First, run the development server:
 
 ```bash
 npm run dev
+```
+
+This opens the workspace in Google Chrome automatically. To run Next.js without opening Chrome, use:
+
+```bash
+npm run dev:next
+```
+
+Other package managers can still run the raw Next.js server:
+
+```bash
 # or
 yarn dev
 # or

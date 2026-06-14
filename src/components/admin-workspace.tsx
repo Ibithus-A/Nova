@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -477,12 +478,12 @@ const initialPages: Record<string, PageData> = {
   <li><strong>Advanced Blocks</strong> — Toggles, callouts, code blocks, tables</li>
   <li><strong>Page Links &amp; PDFs</strong> — Linking pages together, embedding PDFs</li>
   <li><strong>Arthur AI</strong> — Using the AI assistant to ask questions and edit pages</li>
-  <li><strong>Deal Tracker</strong> — Tracking M&amp;A, PE, and capital markets deals</li>
+  <li><strong>Deal Tracker</strong> — Capturing live deal facts, filtering your pipeline, and opening linked research notes</li>
   <li><strong>Graph View</strong> — Navigating your connected knowledge graph</li>
 </ul>
 <hr class="ws-block-divider" contenteditable="false">
 <h2 class="ws-block-heading ws-block-heading-2">Getting started</h2>
-<p>Press <strong>/</strong> anywhere on a page to open the command menu and insert any block type. Hover over any block to reveal the <strong>× delete handle</strong> on the left. Use the sidebar icons to switch between views.</p>
+<p>Press <strong>/</strong> anywhere on a page to open the command menu and insert any block type. Hover over any block to reveal the <strong>× delete handle</strong> on the left. Use the top mode switcher for <strong>News</strong>, <strong>Deals</strong>, and <strong>Personal</strong>, and the sidebar icons for library, deal, and graph views.</p>
 <div class="ws-block-callout" contenteditable="false"><span class="ws-block-callout-icon" contenteditable="false">💡</span><div class="ws-block-callout-body" contenteditable="true"><p>All your notes, deals, and pages are stored in your browser session. Nothing leaves your device unless you choose to export.</p></div></div>
 `.trim(),
   },
@@ -664,22 +665,32 @@ Comparable transactions (last 24 months):
 <p>The Deal Tracker is Nova's version of a live transaction monitor — inspired by professional platforms like Krugman Insights. Use it to keep track of every M&amp;A deal, IPO, fundraising round, or capital markets transaction you're studying.</p>
 <hr class="ws-block-divider" contenteditable="false">
 <h2 class="ws-block-heading ws-block-heading-2">Opening the Deal Tracker</h2>
-<p>Click the <strong>trending-up (📈) icon</strong> in the sidebar toolbar to switch to the Deal Tracker view. You'll see all your tracked deals as cards.</p>
+<p>Click <strong>Deals</strong> in the top mode switcher, or use the <strong>trending-up</strong> icon in the sidebar toolbar. The Deal Tracker opens as a focused pipeline view with metrics, search, status filters, deal rows, and an editing drawer.</p>
+<hr class="ws-block-divider" contenteditable="false">
+<h2 class="ws-block-heading ws-block-heading-2">The core workflow</h2>
+<ol class="ws-block-list ws-block-list-ordered">
+  <li><strong>Search or filter</strong> to narrow the pipeline by deal name, firm, sector, adviser, status, or date</li>
+  <li><strong>Click a row</strong> to edit the deal's headline metadata in the drawer</li>
+  <li><strong>Use Notes</strong> when you want the full linked research page for filings, PDFs, thesis work, or Arthur prompts</li>
+  <li><strong>Keep rows concise</strong> so the tracker stays scannable and comparable</li>
+</ol>
+<div class="ws-block-callout" contenteditable="false"><span class="ws-block-callout-icon" contenteditable="false">💡</span><div class="ws-block-callout-body" contenteditable="true"><p>Think of the tracker as the front page of each situation. It should answer: what is it, who is involved, where is it in the process, and where do I go for deeper analysis?</p></div></div>
 <hr class="ws-block-divider" contenteditable="false">
 <h2 class="ws-block-heading ws-block-heading-2">Adding a deal</h2>
 <ol class="ws-block-list ws-block-list-ordered">
   <li>Click <strong>New Deal</strong> in the top-right of the Deal Tracker view</li>
-  <li>A card appears and a detail panel opens on the right</li>
+  <li>A row appears and the editing drawer opens on the right</li>
   <li>Fill in the deal name, type, status, amount, sector, acquirer, target, and advisers</li>
-  <li>Changes save automatically as you type and leave each field</li>
+  <li>Nova automatically creates a linked notes page for the deal</li>
+  <li>Text fields save when you leave the field; select fields and status steps save immediately</li>
 </ol>
 <hr class="ws-block-divider" contenteditable="false">
 <h2 class="ws-block-heading ws-block-heading-2">Deal fields</h2>
 <table class="ws-block-table"><thead><tr><th contenteditable="true">Field</th><th contenteditable="true">Description</th></tr></thead><tbody><tr><td contenteditable="true">Type</td><td contenteditable="true">M&amp;A, LBO, IPO, ECM, DCM, PE, VC, Fundraising, Exit, Other</td></tr><tr><td contenteditable="true">Status</td><td contenteditable="true">Rumored → Announced → Pending → Completed / Terminated</td></tr><tr><td contenteditable="true">Amount</td><td contenteditable="true">Free text — e.g. "$3.9bn" or "£800m"</td></tr><tr><td contenteditable="true">Sector</td><td contenteditable="true">e.g. Healthcare, Technology, Energy</td></tr><tr><td contenteditable="true">Acquirer</td><td contenteditable="true">The buyer or lead firm</td></tr><tr><td contenteditable="true">Target</td><td contenteditable="true">The company being acquired or the issuer</td></tr><tr><td contenteditable="true">Advisors</td><td contenteditable="true">Banks, law firms, consultants involved</td></tr><tr><td contenteditable="true">Linked page</td><td contenteditable="true">Connect the deal to a Nova page with your full notes</td></tr></tbody></table>
 <hr class="ws-block-divider" contenteditable="false">
 <h2 class="ws-block-heading ws-block-heading-2">Linking deals to pages</h2>
-<p>The most powerful feature is the <strong>Linked page</strong> field. Connect any deal to a workspace page where you keep your full research notes, PDFs, and analysis. Then click <strong>Open linked page</strong> to jump straight there from the Deal Tracker.</p>
-<div class="ws-block-callout" contenteditable="false"><span class="ws-block-callout-icon" contenteditable="false">💡</span><div class="ws-block-callout-body" contenteditable="true"><p>Create one page per deal for your deep-dive notes, then track the headline data in the Deal Tracker. The link between them keeps everything connected without cluttering either view.</p></div></div>
+<p>Each deal has a linked Nova page for deeper work. Click the <strong>Notes</strong> action on a row, or <strong>Open notes</strong> in the drawer, to jump to that page. Use the linked page for filings, PDFs, diligence questions, valuation notes, timeline details, and Arthur conversations.</p>
+<div class="ws-block-callout" contenteditable="false"><span class="ws-block-callout-icon" contenteditable="false">🧭</span><div class="ws-block-callout-body" contenteditable="true"><p>A good habit: keep the tracker row limited to facts you would compare across deals, then keep messy thinking and source material inside the linked notes page.</p></div></div>
 `.trim(),
   },
 
@@ -1307,6 +1318,8 @@ export function AdminWorkspace() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pageHistory, setPageHistory] = useState<string[]>([]);
   const [pageHistoryIndex, setPageHistoryIndex] = useState(-1);
+  const previousViewRef = useRef<typeof view | null>(null);
+  const previousGraphLayerRef = useRef<typeof graphLayer | null>(null);
 
   /* ── Graph state ── */
   const [graphHighlightId, setGraphHighlightId] = useState<string | null>(null);
@@ -1347,6 +1360,7 @@ export function AdminWorkspace() {
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [dealForm, setDealForm] = useState<Partial<Deal> | null>(null);
   const [dealStatusFilter, setDealStatusFilter] = useState<DealStatus | "all">("all");
+  const [dealSearchQuery, setDealSearchQuery] = useState("");
 
   /* ── Arthur AI ── */
   const [arthurThreads, setArthurThreads] = useState<Record<string, ArthurThreadState>>({});
@@ -1451,6 +1465,101 @@ export function AdminWorkspace() {
   useEffect(() => {
     pageHistoryIndexRef.current = pageHistoryIndex;
   }, [pageHistoryIndex]);
+
+  const centerGraphView = useCallback(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const productIds = new Set<string>();
+
+    function collectProductIds(items: SidebarItem[], inProduct: boolean) {
+      for (const item of items) {
+        const isProduct = inProduct || item.id === "tmpl-folder";
+        if (isProduct && item.type === "page") productIds.add(item.id);
+        if (item.type === "folder" && item.children) collectProductIds(item.children, isProduct);
+      }
+    }
+
+    collectProductIds(tree, false);
+
+    const targetIds = allPages
+      .map((page) => page.id)
+      .filter((id) => {
+        if (graphLayer === "news") return productIds.has(id);
+        if (graphLayer === "personal") return !productIds.has(id);
+        return true;
+      });
+    const targetNodes = targetIds
+      .map((id) => simNodeMapRef.current.get(id))
+      .filter((node): node is SimNode => Boolean(node));
+
+    const bounds = targetNodes.reduce(
+      (acc, node) => ({
+        minX: Math.min(acc.minX, node.x),
+        maxX: Math.max(acc.maxX, node.x),
+        minY: Math.min(acc.minY, node.y),
+        maxY: Math.max(acc.maxY, node.y),
+      }),
+      {
+        minX: Number.POSITIVE_INFINITY,
+        maxX: Number.NEGATIVE_INFINITY,
+        minY: Number.POSITIVE_INFINITY,
+        maxY: Number.NEGATIVE_INFINITY,
+      },
+    );
+    const hasBounds = Number.isFinite(bounds.minX);
+    const graphCenterX = hasBounds ? (bounds.minX + bounds.maxX) / 2 : CANVAS_W / 2;
+    const graphCenterY = hasBounds ? (bounds.minY + bounds.maxY) / 2 : CANVAS_H / 2;
+    const boundsW = hasBounds ? Math.max(bounds.maxX - bounds.minX, 1) : CANVAS_W;
+    const boundsH = hasBounds ? Math.max(bounds.maxY - bounds.minY, 1) : CANVAS_H;
+    const fitPadding = 160;
+    const fitScale = Math.min(
+      Math.max((rect.width - fitPadding * 2) / boundsW, MIN_GRAPH_SCALE),
+      Math.max((rect.height - fitPadding * 2) / boundsH, MIN_GRAPH_SCALE),
+    );
+    const scale = Math.max(
+      MIN_GRAPH_SCALE,
+      Math.min(MAX_GRAPH_SCALE, Math.min(transformRef.current.scale, fitScale)),
+    );
+    const nextTransform: Transform = {
+      x: rect.width / 2 - graphCenterX * scale,
+      y: rect.height / 2 - graphCenterY * scale,
+      scale,
+    };
+
+    setTransform(nextTransform);
+    transformRef.current = nextTransform;
+  }, [allPages, graphLayer, tree]);
+
+  const switchToNewsGraph = useCallback(() => {
+    setAppMode("product");
+    setGraphLayer("news");
+    setView("graph");
+  }, []);
+
+  const switchToDeals = useCallback(() => {
+    setAppMode("personal");
+    setGraphLayer("deals");
+    setView("deals");
+  }, []);
+
+  const switchToPersonalGraph = useCallback(() => {
+    setAppMode("personal");
+    setGraphLayer("personal");
+    setView("graph");
+  }, []);
+
+  useLayoutEffect(() => {
+    const wasGraph = previousViewRef.current === "graph";
+    const previousGraphLayer = previousGraphLayerRef.current;
+    previousViewRef.current = view;
+    previousGraphLayerRef.current = graphLayer;
+
+    if (view === "graph" && (!wasGraph || previousGraphLayer !== graphLayer)) {
+      centerGraphView();
+    }
+  }, [centerGraphView, graphLayer, view]);
 
   /* ── Simulation engine ── */
   const startSim = useCallback(() => {
@@ -3846,7 +3955,7 @@ export function AdminWorkspace() {
             className={`ws-icon-btn${view === "deals" ? " ws-icon-btn-active" : ""}`}
             title="Deal tracker"
             type="button"
-            onClick={() => setView("deals")}
+            onClick={switchToDeals}
             aria-pressed={view === "deals"}
             aria-label="Deal tracker"
           >
@@ -3856,7 +3965,7 @@ export function AdminWorkspace() {
             className={`ws-icon-btn${view === "graph" ? " ws-icon-btn-active" : ""}`}
             title="Graph view"
             type="button"
-            onClick={() => setView("graph")}
+            onClick={graphLayer === "news" ? switchToNewsGraph : switchToPersonalGraph}
             aria-pressed={view === "graph"}
             aria-label="Graph view"
           >
@@ -3954,7 +4063,7 @@ export function AdminWorkspace() {
             {view !== "graph" && (
               <button
                 className="ws-icon-btn"
-                onClick={() => setView("graph")}
+                onClick={graphLayer === "news" ? switchToNewsGraph : switchToPersonalGraph}
                 title="Graph view"
                 type="button"
                 aria-label="Switch to graph view"
@@ -3968,24 +4077,24 @@ export function AdminWorkspace() {
             {/* Mode navigation */}
             <div className="ws-topbar-modes">
               <button
-                className={`ws-topbar-mode-tab${appMode === "product" && graphLayer === "news" ? " ws-topbar-mode-tab-active" : ""}`}
-                onClick={() => { setAppMode("product"); setGraphLayer("news"); }}
+                className={`ws-topbar-mode-tab${view === "graph" && appMode === "product" && graphLayer === "news" ? " ws-topbar-mode-tab-active" : ""}`}
+                onClick={switchToNewsGraph}
                 type="button"
               >
                 <Newspaper size={12} strokeWidth={2} />
                 News
               </button>
               <button
-                className={`ws-topbar-mode-tab${graphLayer === "deals" ? " ws-topbar-mode-tab-active" : ""}`}
-                onClick={() => { setGraphLayer("deals"); setView("deals"); }}
+                className={`ws-topbar-mode-tab${view === "deals" ? " ws-topbar-mode-tab-active" : ""}`}
+                onClick={switchToDeals}
                 type="button"
               >
                 <TrendingUp size={12} strokeWidth={2} />
                 Deals
               </button>
               <button
-                className={`ws-topbar-mode-tab${appMode === "personal" ? " ws-topbar-mode-tab-active" : ""}`}
-                onClick={() => { setAppMode("personal"); setGraphLayer("personal"); }}
+                className={`ws-topbar-mode-tab${view === "graph" && appMode === "personal" && graphLayer === "personal" ? " ws-topbar-mode-tab-active" : ""}`}
+                onClick={switchToPersonalGraph}
                 type="button"
               >
                 <User size={12} strokeWidth={2} />
@@ -4529,11 +4638,29 @@ export function AdminWorkspace() {
             completed:  { label: "Completed",  color: "#3aaa6e" },
             terminated: { label: "Terminated", color: "#c94040" },
           };
-          const filteredDealList = dealList.filter((d) => dealStatusFilter === "all" || d.status === dealStatusFilter);
+          const normalizedDealQuery = dealSearchQuery.trim().toLowerCase();
+          const filteredDealList = dealList.filter((d) => {
+            const matchesStatus = dealStatusFilter === "all" || d.status === dealStatusFilter;
+            if (!matchesStatus) return false;
+            if (!normalizedDealQuery) return true;
+
+            return [
+              d.name,
+              d.type,
+              d.amount,
+              d.status,
+              d.acquirer,
+              d.target,
+              d.sector,
+              d.advisors,
+              d.date,
+            ].some((value) => value?.toLowerCase().includes(normalizedDealQuery));
+          });
           const dealMetrics = [
             { label: "Tracked deals", value: String(dealList.length) },
             { label: "Live pipeline", value: String(dealList.filter((d) => d.status === "announced" || d.status === "pending").length) },
             { label: "Completed", value: String(dealList.filter((d) => d.status === "completed").length) },
+            { label: "With notes", value: String(dealList.filter((d) => d.linkedPageId && pages[d.linkedPageId]).length) },
           ];
 
           return (
@@ -4547,7 +4674,7 @@ export function AdminWorkspace() {
                     <span className="ws-deals-count">{dealList.length}</span>
                   </div>
                   <p className="ws-deals-subtitle">
-                    Track live situations, keep structured metadata clean, and jump straight into linked notes when a deal needs real work.
+                    Use cards for the headline facts, the drawer for clean metadata, and linked notes for the real analysis.
                   </p>
                 </div>
                 <button
@@ -4569,21 +4696,48 @@ export function AdminWorkspace() {
                 ))}
               </div>
 
-              {/* Status filter pills */}
-              <div className="ws-deals-filters">
-                {(["all", ...Object.keys(STATUS_META)] as const).map((s) => (
-                  <button
-                    key={s}
-                    className={`ws-deals-filter-pill${dealStatusFilter === s || (dealStatusFilter === "all" && s === "all") ? " ws-deals-filter-pill-active" : ""}`}
-                    type="button"
-                    onClick={() => setDealStatusFilter(s === "all" ? "all" : s as DealStatus)}
-                  >
-                    {s === "all" ? "All" : STATUS_META[s as DealStatus].label}
-                    <span className="ws-deals-filter-count">
-                      {s === "all" ? dealList.length : dealList.filter((d) => d.status === s).length}
-                    </span>
-                  </button>
-                ))}
+              <div className="ws-deals-controls">
+                <div className="ws-deals-search">
+                  <Search size={13} strokeWidth={2} aria-hidden="true" />
+                  <input
+                    className="ws-deals-search-input"
+                    value={dealSearchQuery}
+                    onChange={(event) => setDealSearchQuery(event.target.value)}
+                    placeholder="Search deals, firms, sectors, advisors..."
+                    aria-label="Search deals"
+                  />
+                  {dealSearchQuery ? (
+                    <button
+                      className="ws-deals-search-clear"
+                      type="button"
+                      onClick={() => setDealSearchQuery("")}
+                      aria-label="Clear deal search"
+                    >
+                      <X size={11} strokeWidth={2.4} />
+                    </button>
+                  ) : null}
+                </div>
+
+                {/* Status filter pills */}
+                <div className="ws-deals-filters" aria-label="Filter deals by status">
+                  {(["all", ...Object.keys(STATUS_META)] as const).map((s) => (
+                    <button
+                      key={s}
+                      className={`ws-deals-filter-pill${dealStatusFilter === s || (dealStatusFilter === "all" && s === "all") ? " ws-deals-filter-pill-active" : ""}`}
+                      type="button"
+                      onClick={() => setDealStatusFilter(s === "all" ? "all" : s as DealStatus)}
+                    >
+                      {s === "all" ? "All" : STATUS_META[s as DealStatus].label}
+                      <span className="ws-deals-filter-count">
+                        {s === "all" ? dealList.length : dealList.filter((d) => d.status === s).length}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <p className="ws-deals-help">
+                  Click a row to edit it. Use Notes when you want the full research page.
+                </p>
               </div>
 
               <div className="ws-deals-body">
@@ -4606,12 +4760,8 @@ export function AdminWorkspace() {
                         key={deal.id}
                         className={`ws-deal-card${isActive ? " ws-deal-card-active" : ""}`}
                         onClick={() => {
-                          if (deal.linkedPageId && pages[deal.linkedPageId]) {
-                            openPage(deal.linkedPageId);
-                          } else {
-                            setSelectedDealId(isActive ? null : deal.id);
-                            setDealForm(isActive ? null : { ...deal });
-                          }
+                          setSelectedDealId(isActive ? null : deal.id);
+                          setDealForm(isActive ? null : { ...deal });
                         }}
                       >
                         {/* Left accent bar */}
@@ -4654,15 +4804,29 @@ export function AdminWorkspace() {
                           </span>
                           {deal.amount ? <span className="ws-deal-amount">{deal.amount}</span> : null}
                           {deal.linkedPageId && pages[deal.linkedPageId] ? (
-                            <div className="ws-deal-card-cta">
+                            <button
+                              className="ws-deal-card-cta"
+                              type="button"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                openPage(deal.linkedPageId!);
+                              }}
+                              aria-label={`Open notes for ${deal.name}`}
+                            >
                               <ArrowUpRight size={10} strokeWidth={2} />
                               Notes
-                            </div>
+                            </button>
                           ) : null}
                         </div>
                       </article>
                     );
                   })}
+                  {dealList.length > 0 && filteredDealList.length === 0 ? (
+                    <div className="ws-deals-empty">
+                      <Search size={24} strokeWidth={1.5} />
+                      <p>No deals match the current search or status.</p>
+                    </div>
+                  ) : null}
                 </div>
 
                 {/* Edit drawer — slides in over the right side when no linked page, or used for editing */}
@@ -4730,6 +4894,9 @@ export function AdminWorkspace() {
                           Terminated
                         </button>
                       </div>
+                      <p className="ws-deal-drawer-hint">
+                        Keep the row concise. Put assumptions, filings, PDFs, and longer analysis in the linked notes page.
+                      </p>
                     </div>
 
                     <div className="ws-deal-drawer-body">
@@ -4834,9 +5001,53 @@ export function AdminWorkspace() {
                           }}
                         />
                       </div>
+
+                      <div className="ws-deal-linked-note">
+                        <div>
+                          <span className="ws-deal-field-label">Linked notes</span>
+                          <p>
+                            {activeDeal.linkedPageId && pages[activeDeal.linkedPageId]
+                              ? pages[activeDeal.linkedPageId].title
+                              : "Nova creates a notes page for each deal so your deeper work stays connected."}
+                          </p>
+                        </div>
+                        {activeDeal.linkedPageId && pages[activeDeal.linkedPageId] ? (
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            type="button"
+                            onClick={() => openPage(activeDeal.linkedPageId!)}
+                          >
+                            <ArrowUpRight size={12} strokeWidth={2} />
+                            Open notes
+                          </button>
+                        ) : null}
+                      </div>
                     </div>
                   </aside>
-                ) : null}
+                ) : (
+                  <aside className="ws-deal-drawer ws-deal-drawer-empty">
+                    <div className="ws-deal-drawer-header">
+                      <span className="ws-deal-drawer-label">How to use deals</span>
+                      <p className="ws-deal-drawer-hint">
+                        Select a row to edit its headline facts. Open Notes when the situation needs real analysis.
+                      </p>
+                    </div>
+                    <div className="ws-deal-drawer-body">
+                      <div className="ws-deal-guide-step">
+                        <strong>1. Capture the situation</strong>
+                        <span>Name the deal, choose its type, add the amount, sector, parties, advisors, and date.</span>
+                      </div>
+                      <div className="ws-deal-guide-step">
+                        <strong>2. Move the status forward</strong>
+                        <span>Use Rumored, Announced, Pending, Completed, or Terminated as the deal evolves.</span>
+                      </div>
+                      <div className="ws-deal-guide-step">
+                        <strong>3. Use notes for depth</strong>
+                        <span>The row stays scannable; the linked page holds filings, thesis notes, PDFs, and Arthur prompts.</span>
+                      </div>
+                    </div>
+                  </aside>
+                )}
               </div>
             </div>
           );
